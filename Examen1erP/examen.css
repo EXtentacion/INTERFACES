@@ -1,0 +1,26 @@
+.centro-table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    border-radius:  55%;
+  }
+  
+  .centro-table th, .centro-table td {
+    border: 1px solid black;
+    padding: 8px;
+  }
+  
+  .centro-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .centro-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
