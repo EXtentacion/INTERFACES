@@ -1,5 +1,5 @@
 #instanciamos la clase Flask
-from flask import Flask
+from flask import Flask,render_template,request
 
 #inicializamos la app
 app = Flask(__name__)
@@ -18,16 +18,25 @@ app.config ['MySQL_DATABASE_DB'] = 'dbflask'
 
 #creamos la funcion
 def index():
-    return 'Hola mundo'
+    return render_template('index.html')
 
-@app.route('/guardar')
+@app.route('/guardar',methods=['POST'])
 def guardar():
-    return 'Guardado'
+    if request.method == 'POST':
+        Titulo = request.form['Titulo']
+        Artista = request.form['Artista']
+        Anio = request.form['Anio']
+        print(Titulo)
+        print(Artista)
+        print(Anio)
+        return 'Cambios guardados'
+    
+    
 
 @app.route('/eliminar')
 def eliminar():
     
-    return 'Eliminado'
+    return 'Eliminar'
 
 
 
