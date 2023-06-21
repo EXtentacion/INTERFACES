@@ -1,17 +1,22 @@
 #instanciamos la clase Flask
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,redirect,url_for
+from flask_mysqldb import MySQL
 
 #inicializamos la app
 app = Flask(__name__)
-app.config ['MySQL_DATABASE_HOST'] = 'localhost'
-app.config ['MySQL_DATABASE_USER'] = 'root'
-app.config ['MySQL_DATABASE_PASSWORD'] = ''
-app.config ['MySQL_DATABASE_DB'] = 'dbflask'
+app.config ['MySQL_HOST'] = 'localhost'
+app.config ['MySQL_USER'] = 'six'
+app.config ['MySQL_PASSWORD'] = ''
+app.config ['MySQL_DB'] = 'dbflask'
 
 
+mysql = MySQL(app)
 
 
+#CREATE TABLE albums (id INT(11) AUTO_INCREMENT PRIMARY KEY, titulo VARCHAR(255), artista VARCHAR(255), anio INT(11));
 
+
+     
 
 #Definimos la ruta  
 @app.route('/')
@@ -29,7 +34,12 @@ def guardar():
         print(Titulo)
         print(Artista)
         print(Anio)
-        return 'Cambios guardados'
+        cur= mysql.connection.cursor()
+        cur.execute('INSERT INTO albums (titulo,artista,anio) VALUES (%s,%s,%s)',(Titulo,Artista,Anio))
+        mysql.connection.commit()
+        return 'Recibido'
+    return redirect(url_for('index'))
+
     
     
 
