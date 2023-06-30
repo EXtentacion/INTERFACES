@@ -5,7 +5,7 @@ from flask_mysqldb import MySQL
 #inicializamos la app
 app = Flask(__name__)
 app.config ['MySQL_HOST'] = 'localhost'
-app.config ['MySQL_USER'] = 'six'
+app.config ['MySQL_USER'] = 'root'
 app.config ['MySQL_PASSWORD'] = ''
 app.config ['MySQL_DB'] = 'dbflask'
 
@@ -15,8 +15,6 @@ mysql = MySQL(app)
 
 #CREATE TABLE albums (id INT(11) AUTO_INCREMENT PRIMARY KEY, titulo VARCHAR(255), artista VARCHAR(255), anio INT(11));
 
-
-     
 
 #Definimos la ruta  
 @app.route('/')
