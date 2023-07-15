@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,29 +7,35 @@
     <title>CRUD_ALBUMS</title>
 </head>
 <body>
-
-
     <br>
     <br>
     <h1><center>Crud de Albums</center></h1>
     <br>
     <br>
-    <form action= "/guardar" method="POST">
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <form action="/guardar" method="POST">
         <center>
         <input type="text" name="Titulo" id="Titulo" placeholder="Titulo">
         <input type="text" name="Artista" id="Artista" placeholder="Artista">
-        <input type="Date" name="Anio" id="Anio" placeholder="Anio">
+        <input type="text" name="Anio" id="Anio" placeholder="Anio">
         <br>
         <br>
         <br>
         <br>
 
         <button type="submit" name="guardar" id="guardar">Guardar</button>
-            
-            
         </center>
     </form>
-
 
     <br>
     <br>
@@ -48,9 +53,5 @@
             </thead>
         </table>
     </center>
-        
-    
 </body>
 </html>
-
-

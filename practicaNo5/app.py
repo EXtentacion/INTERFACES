@@ -1,59 +1,95 @@
-#instanciamos la clase Flask
-from flask import Flask,render_template,request,redirect,url_for
-from flask_mysqldb import MySQL
+from flask import Flask, render_template, request, redirect, url_for, flash
+import sqlite3
 
-#inicializamos la app
 app = Flask(__name__)
-app.config ['MySQL_HOST'] = 'localhost'
-app.config ['MySQL_USER'] = 'root'
-app.config ['MySQL_PASSWORD'] = ''
-app.config ['MySQL_DB'] = 'dbflask'
+app.secret_key = "your_secret_key"
 
+# Función para establecer la conexión con la base de datos SQLite
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
-mysql = MySQL(app)
-
-
-#CREATE TABLE albums (id INT(11) AUTO_INCREMENT PRIMARY KEY, titulo VARCHAR(255), artista VARCHAR(255), anio INT(11));
-
-
-#Definimos la ruta  
+# Ruta principal
 @app.route('/')
-
-#creamos la funcion
 def index():
-    return render_template('index.html')
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM albums')
+    albums = cur.fetchall()
+    conn.close()
+    return render_template('index.html', listAlbums=albums)
 
-@app.route('/guardar',methods=['POST'])
+# Ruta para guardar un nuevo álbum
+@app.route('/guardar', methods=['POST'])
 def guardar():
     if request.method == 'POST':
-        Titulo = request.form['Titulo']
-        Artista = request.form['Artista']
-        Anio = request.form['Anio']
-        print(Titulo)
-        print(Artista)
-        print(Anio)
-        cur= mysql.connection.cursor()
-        cur.execute('INSERT INTO albums (titulo,artista,anio) VALUES (%s,%s,%s)',(Titulo,Artista,Anio))
-        mysql.connection.commit()
-        return 'Recibido'
+        titulo = request.form.get('txtTitulo')
+        artista = request.form.get('txtArtista')
+        año = request.form.get('txtAño')
+
+        if titulo and artista and año:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute('INSERT INTO albums (Titulo, Artista, Año) VALUES (?, ?, ?)', (titulo, artista, año))
+            conn.commit()
+            conn.close()
+            flash('Album Agregado Correctamente bro')
+        else:
+            flash('Todos los campos son requeridos')
+
     return redirect(url_for('index'))
 
-    
-    
 
-@app.route('/eliminar')
-def eliminar():
-    
-    return 'Eliminar'
+# Ruta para editar un álbum
+@app.route('/editar/<int:id>', methods=['GET', 'POST'])
+def editar(id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM albums WHERE ID = ?', (id,))
+    album = cur.fetchone()
 
+    if request.method == 'POST':
+        titulo = request.form['txtTitulo']
+        artista = request.form['txtArtista']
+        año = request.form['txtAño']
+        cur.execute('UPDATE albums SET Titulo = ?, Artista = ?, Año = ? WHERE ID = ?', (titulo, artista, año, id))
+        conn.commit()
+        conn.close()
+        flash('Album Modificado Correctamente bro')
+        return redirect(url_for('index'))
 
+    conn.close()
+    return render_template('EditarAlbum.html', album=album)
 
+# Ruta para eliminar un álbum
+@app.route('/eliminar/<int:id>', methods=['GET', 'POST'])
+def eliminar(id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('DELETE FROM albums WHERE ID = ?', (id,))
+    conn.commit()
+    conn.close()
+    flash('Album Eliminado Correctamente bro')
+    return redirect(url_for('index'))
 
+# Crear la tabla "albums" si no existe
+def create_table():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS albums (
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Titulo TEXT NOT NULL,
+            Artista TEXT NOT NULL,
+            Año TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-#creamos la ruta
+# Ejecutar la función para crear la tabla
+create_table()
+
 if __name__ == '__main__':
-    
-    app.run(debug = True, port = 8000)
-
-
-
+    app.run(port=5000, debug=True)
