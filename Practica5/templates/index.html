@@ -1,0 +1,142 @@
+{% extends 'plantilla.html' %}
+
+{% block body %}
+
+<style>
+    /* Agrega este estilo para centrar el contenido en las celdas de la tabla */
+    .table th,
+    .table td {
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-5">
+    <h1 class="display-3 text-center">Gestión de Álbumes</h1>
+</div>
+
+<div class="container my-5">
+    {% with mensajes=get_flashed_messages() %}
+    {% if mensajes %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-message">
+        <ul class="list-unstyled mb-0">
+        {% for msj in mensajes %}
+            <li>{{ msj }}</li> 
+        {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-primary">Registro de Álbumes</h2>
+            <div class="card" style="background-color: #f2f2f2; padding: 20px;">
+                <form action="/guardar" method="POST">
+                    <div class="mb-3">
+                        <label for="txtTitulo" class="form-label">Título</label>
+                        <input type="text" class="form-control" name="txtTitulo" id="txtTitulo" placeholder="Escribe el Título">
+                    </div>
+                    <div class="mb-3">
+                        <label for="txtArtista" class="form-label">Artista</label>
+                        <input type="text" class="form-control" name="txtArtista" id="txtArtista" placeholder="Escribe el Artista"> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="txtAnio" class="form-label">Año</label>
+                        <input type="number" class="form-control" name="txtAnio" id="txtAnio" placeholder="Escribe el año">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2 class="text-primary">Álbumes Guardados</h2>
+            <div class="table-responsive">
+                {% if listAlbums %}
+                <table class="table table-striped table-hover" style="background-color: #b3b3b3;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #000;">ID</th>
+                            <th style="border: 1px solid #000;">Álbum</th>
+                            <th style="border: 1px solid #000;">Artista</th>
+                            <th style="border: 1px solid #000;">Año de Publicación</th>
+                            <th style="border: 1px solid #000;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for album in listAlbums %}
+                        <tr>
+                            <td style="border: 1px solid #000;">{{ album[0] }}</td>
+                            <td style="border: 1px solid #000;">{{ album[1] }}</td>
+                            <td style="border: 1px solid #000;">{{ album[2] }}</td>
+                            <td style="border: 1px solid #000;">{{ album[3] }}</td>
+                            <td style="border: 1px solid #000;">
+                                <a href="{{ url_for('editar', id=album[0]) }}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
+                                <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal" data-album-id="{{ album[0] }}"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No se encontraron álbumes.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de eliminar este álbum?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmButton">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var albumIdToDelete;
+
+    // Función para mostrar la modal de confirmación antes de eliminar
+    function confirmarEliminar(albumId) {
+        albumIdToDelete = albumId;
+        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'), {});
+        confirmModal.show();
+    }
+
+    // Al hacer clic en el botón "Eliminar" de la modal
+    document.getElementById('confirmButton').addEventListener('click', function() {
+        if (albumIdToDelete) {
+            window.location.href = '/borrar/' + albumIdToDelete;
+        }
+    });
+
+    // Desvanecer el mensaje de éxito después de 3 segundos
+    setTimeout(function() {
+        var successMessage = document.getElementById('success-message');
+        if (successMessage) {
+            successMessage.style.transition = 'opacity 1s ease-in-out';
+            successMessage.style.opacity = 0;
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 1000);
+        }
+    }, 3000);
+</script>
+
+{% endblock %}

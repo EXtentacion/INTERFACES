@@ -1,0 +1,18 @@
+
+{% extends 'plantilla.html' %} -heredar el archivo-
+{% block body %}
+
+    <div class="mt-5 mb-5">    
+    <h1 class="display-1 text-center">Album a Eliminar</h1>
+    </div>
+    <div class="row container">
+    <p>¿Seguro que deseas eliminar el Album? {{albumEli.1}} {{albumEli.2}} {{albumEli.3}}</p>
+    <div class="col-md-5">
+        <form action="/eliminar/{{albumEli.0}}" method="POST">
+            <div class="d-grid gap-2 col-6 mx-auto mb-2">
+                <button type="submit" class="btn btn-outline-info">Eliminar</button>
+            </div>
+        </form>
+    </div>
+    </div>
+{% endblock %}
