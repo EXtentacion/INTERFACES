@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Flor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center">Editar Flor</h1>
+
+    <form action="{{ url_for('editar', id=flor[0]) }}" method="post">
+        <div class="form-group">
+            <input class="form-control" type="text" name="txtNombre" placeholder="Nombre de la flor" value="{{ flor[1] }}">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="number" name="Cantidad" placeholder="Cantidad" value="{{ flor[2] }}">
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="number" name="Precio" placeholder="Precio" value="{{ flor[3] }}">
+        </div>
+        <button class="btn btn-primary" type="submit">Actualizar</button>
+    </form>
+
+    <a class="btn btn-secondary mt-3" href="{{ url_for('index1') }}">Volver a la lista</a>
+</div>
+
+</body>
+</html>
